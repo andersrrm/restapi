@@ -6,9 +6,9 @@ use Firebase\JWT\JWT;
 class Connection{
     static public function infoDatabase(){
         $DB = array(
-            "database" => 'restapi',
-            "user" => 'root',
-            "password" => 'password',
+            "database" => db_name,
+            "user" => db_user,
+            "password" => db_password,
         );
         return $DB;
     }
@@ -29,14 +29,14 @@ class Connection{
     static public function jwt($id,$email){
         $token = array (
             'iat' => time(),
-            'exp' => time() + 60*2,
+            'exp' => time() + token_exp,
             'data' => [
                 "id" => $id,
                 "email" => $email,
             ]
         );
 
-        $jwt = JWT::encode($token,"asdasdasd","HS256");
+        $jwt = JWT::encode($token,"asdasdasd",token_hash);
         return [
             "token" => $token,
             "jwt" => $jwt,

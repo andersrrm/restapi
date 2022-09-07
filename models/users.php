@@ -85,11 +85,11 @@ class Users{
 
         $id = Users::getOne($email)[0]['id'];
         $sql = "UPDATE ". self::$table ." SET ".$req." where id = '".$id."'";
-        
+
         $conn = Connection::connect();
         $stmt = $conn->prepare($sql);
         if ($stmt->execute()){
-            return ($stmt->rowCount()==0) ? false : true;
+            return true;
         }else{
             return $conn->errorInfo();
         }

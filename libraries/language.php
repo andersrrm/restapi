@@ -7,3 +7,4 @@ define('userNotFound', 'This user email is not found');
 define('passwordIncorrect', 'This password is incorrect');
 define('noQuery', 'No query specified');
 define('emailNotExist', 'This email does not exist');
+define('missingParameter', 'Missing parameter');

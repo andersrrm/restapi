@@ -11,7 +11,7 @@ if (isset($_POST)){
     
     $response = new PostController();
     if (isset($_GET['create']) && $_GET['create'] == true){
-        $response -> postCegister($_POST);    
+        $response -> postCreate($_POST);    
     
     }else if (isset($_GET['readAll']) && $_GET['readAll'] == true){
         $response -> postReadAll($_POST);

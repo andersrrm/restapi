@@ -15,30 +15,34 @@ class PostController{
 			'message' => '',
             'response' => '',
 		];
+        if (isset($data['email']) && isset($data['password'])) {
+            $user = Users::getOne($data['email']);
+            if (!empty($user)){
+                $user = $user[0];
+                $crypted = crypt($data['password'],'$2a$07$azybxcags23425sdg23sdfhsd$');
+                if ($user['password'] == $crypted){
 
-        $user = Users::getOne($data['email']);
-        if (!empty($user)){
-            $user = $user[0];
-            $crypted = crypt($data['password'],'$2a$07$azybxcags23425sdg23sdfhsd$');
-            if ($user['password'] == $crypted){
-
-                $jwt = Connection::jwt($user['id'],$user['email']);
-                $updated = Users::updateToken($user['id'],$jwt['jwt'],$jwt['token']['exp']);
-                if ($updated){
-                    $user['token'] = $jwt['jwt'];
-                    $user['token_expiration'] = $jwt['token']['exp'];
-                    unset($user['password']);
-                    $result['response'] = $user;
-                    $result['status'] = true;    
-                    $result['message'] = 'Succesfully';
+                    $jwt = Connection::jwt($user['id'],$user['email']);
+                    $updated = Users::updateToken($user['id'],$jwt['jwt'],$jwt['token']['exp']);
+                    if ($updated){
+                        $user['token'] = $jwt['jwt'];
+                        $user['token_expiration'] = $jwt['token']['exp'];
+                        unset($user['password']);
+                        $result['response'] = $user;
+                        $result['status'] = true;    
+                        $result['message'] = 'Succesfully';
+                    }
+                }else{
+                    $result['errors'][] = passwordIncorrect;
+                    $result['message'] = passwordIncorrect;    
                 }
             }else{
-                $result['errors'][] = passwordIncorrect;
-		 	    $result['message'] = passwordIncorrect;    
+                $result['errors'][] = userNotFound;
+                $result['message'] = userNotFound;
             }
         }else{
-            $result['errors'][] = userNotFound;
-		 	$result['message'] = userNotFound;
+            $result['errors'][] = missingParameter;
+            $result['message'] = missingParameter;
         }
 
         $status = ($result['status'] == true) ? 200 : 400;
@@ -56,25 +60,30 @@ class PostController{
             'response' => '',
 		];
 
-		$password_validate_msg = '';
-		$password_validate = password_validate($data['password'], $password_validate_msg);
-		if (!$password_validate) {
-			$result['errors'][] = $password_validate_msg;
-			$result['message'] = $password_validate_msg;
-		}
-
-		if (!isset($data['email']) or empty($data['email']) or !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-		 	$result['errors'][] = emailNotValid;
-		 	$result['message'] = emailNotValid;
-		}
-		if (!isset($data['name']) or empty($data['name']) or strlen($data['name']) > 255) {
-		 	$result['errors'][] = nameNotValid;
-		 	$result['message'] = nameNotValid;
-		}
-        $isRegistered = Users::existMail($data['email']);
-        if ($isRegistered){
-            $result['errors'][] = alreadyRegistered;
-		 	$result['message'] = alreadyRegistered;
+		
+        if (isset($data['password']) && isset($data['name']) && isset($data['password'])) {
+            $password_validate_msg = '';
+            $password_validate = password_validate($data['password'], $password_validate_msg);
+            if (!$password_validate) {
+                $result['errors'][] = $password_validate_msg;
+                $result['message'] = $password_validate_msg;
+            }
+            if (!isset($data['email']) or empty($data['email']) or !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+                $result['errors'][] = emailNotValid;
+                $result['message'] = emailNotValid;
+            }
+            if (!isset($data['name']) or empty($data['name']) or strlen($data['name']) > 255) {
+                $result['errors'][] = nameNotValid;
+                $result['message'] = nameNotValid;
+            }
+            $isRegistered = Users::existMail($data['email']);
+            if ($isRegistered){
+               $result['errors'][] = alreadyRegistered;
+                $result['message'] = alreadyRegistered;
+            }
+        }else{
+            $result['errors'][] = missingParameter;
+            $result['message'] = missingParameter;
         }
 
         if(count($result['errors'])==0){
@@ -200,7 +209,7 @@ class PostController{
             }else{
                 $articles = Articles::getMany($query,$limit,$searchby);
                 $redis->set('articles', json_encode($articles));
-                $redis->expire('articles', redisexp);
+                $redis->expire('articles', redis_exp);
                 $result['message'] = 'fetch';
             }
             $result['response'] = $articles;
