@@ -95,31 +95,31 @@ GENERAL -> cache after second same search
     * Token validation.
 
 FETCHING N LATEST ARTICLES WITH KEYBOARD Q
-POST apirest.com?getArticles=true:
-    Body:
-    * @param query  Q
-    * @param limit  N
-    * @param token
-    Validations implemented:
-    * Token validation.
+- POST apirest.com?getArticles=true:
+- Body:
+- * @param query  Q
+- * @param limit  N
+- * @param token
+- Validations implemented:
+- * Token validation.
 
 FETCHING LATEST ARTICLES WITH KEYBOARDS Q AND Q2 ...
-POST apirest.com?getArticles=true:
-    Body:
-    * @param query  Q,Q2,Q3 SEPARATED BY COMMAS
-    * @param token
-    Validations implemented:
-    * Token validation.
+- POST apirest.com?getArticles=true:
+- Body:
+- * @param query  Q,Q2,Q3 SEPARATED BY COMMAS
+- * @param token
+- Validations implemented:
+- * Token validation.
 
 FETCHING N LATEST ARTICLES WITH KEYBOARD Q IN TITLE OR CONTENT OR DESCRIPTION
-POST apirest.com?getArticles=true: 
-    Body:
-    * @param query  Q
-    * @param limit  N
-    * @param searchby   "title" || "title,description" || "title,description,content" || in other order || "xxtitlexx"
-    * @param token
-    Validations implemented:
-    * Token validation.
+- POST apirest.com?getArticles=true: 
+- Body:
+- * @param query  Q
+- * @param limit  N
+- * @param searchby   "title" || "title,description" || "title,description,content" || in other order || "xxtitlexx"
+- * @param token
+- Validations implemented:
+- * Token validation.
 
 Example OUTPUT CRUD:
 {
