@@ -8,3 +8,5 @@ define('passwordIncorrect', 'This password is incorrect');
 define('noQuery', 'No query specified');
 define('emailNotExist', 'This email does not exist');
 define('missingParameter', 'Missing parameter');
+define('tokenExpired', 'Your token expired or is missing');
+

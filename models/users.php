@@ -138,6 +138,31 @@ class Users{
 
     /**
      * Author: anders.rojas@pucp.pe
+     * Descr: Validate Token
+     * @param string token
+     * @return bool If token validated
+	 */    
+    public function validateToken($token){
+        $sql = "SELECT * from " . self::$table . " where token = '".$token."'";
+        $conn = Connection::connect();
+        $stmt = $conn->prepare($sql);
+        if ($stmt->execute()){
+            $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            if ($result){
+                if ($result[0]['token_expiration']>time()){
+                    return true;
+                }
+                return false;
+            }
+            return false;
+            
+        }else{
+            return $conn->errorInfo();
+        }
+        
+    }
+    /**
+     * Author: anders.rojas@pucp.pe
      * Descr: Store user information
      * @param array user information
      * @return array [id stored, 'success']

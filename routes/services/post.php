@@ -29,8 +29,8 @@ if (isset($_POST)){
         $query = (isset($_POST['query']) ? $_POST['query']:false);
         $limit = (isset($_POST['limit']) ? $_POST['limit']:false);
         $searchby = (isset($_POST['searchby']) ? $_POST['searchby']:false);
-        $response -> postGetArticles($query,$limit,$searchby);    
-
+        $token = (isset($_POST['token']) ? $_POST['token']:false);
+        $response -> postGetArticles($token,$query,$limit,$searchby);
     }else{
         $response -> postData($_POST);
     }

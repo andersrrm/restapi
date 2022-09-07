@@ -21,7 +21,6 @@ class PostController{
                 $user = $user[0];
                 $crypted = crypt($data['password'],'$2a$07$azybxcags23425sdg23sdfhsd$');
                 if ($user['password'] == $crypted){
-
                     $jwt = Connection::jwt($user['id'],$user['email']);
                     $updated = Users::updateToken($user['id'],$jwt['jwt'],$jwt['token']['exp']);
                     if ($updated){
@@ -191,31 +190,41 @@ class PostController{
         $return -> response($result,$status);
     }
 
-    static public function postGetArticles($query, $limit, $searchby){
+    static public function postGetArticles($token,$query, $limit, $searchby){
         $result = [
 			'status' => false,
 			'errors' => [],
 			'message' => '',
             'response' => '',
 		];
-        
-        if ($query){
-            $articles = [];
-            $redis = new Predis\Client();
-            $cachedEntry = $redis->get('articles');
-            if ($cachedEntry){
-                $articles = json_decode($cachedEntry);
-                $result['message'] = 'cache';
+        if ($token){
+            if (Users::validateToken($token)){
+                if ($query){
+                    $articles = [];
+                    $redis = new Predis\Client();
+                    $cachedEntry = $redis->get('articles');
+                    if ($cachedEntry){
+                        $articles = json_decode($cachedEntry);
+                        $result['message'] = 'cache';
+                    }else{
+                        $articles = Articles::getMany($query,$limit,$searchby);
+                        $redis->set('articles', json_encode($articles));
+                        $redis->expire('articles', redis_exp);
+                        $result['message'] = 'fetch';
+                    }
+                    $result['response'] = $articles;
+                    $result['status'] = true;
+                }else{
+                    $result['errors'][] = noQuery;
+                    $result['message'] = noQuery;
+                }
             }else{
-                $articles = Articles::getMany($query,$limit,$searchby);
-                $redis->set('articles', json_encode($articles));
-                $redis->expire('articles', redis_exp);
-                $result['message'] = 'fetch';
+                $result['errors'][] = tokenExpired;
+                $result['message'] = tokenExpired;
             }
-            $result['response'] = $articles;
-            $result['status'] = true;
         }else{
-            $result['errors'] = noQuery;
+            $result['errors'][] = tokenExpired;
+            $result['message'] = tokenExpired;
         }
 
         $status = ($result['status'] == true) ? 200 : 400;
